@@ -21,6 +21,45 @@ echo ""
 
 # Get installation path
 INSTALL_PATH=$(pwd)
+REPO_NAME="Arseno25/vps-monitor"
+
+# ============================================================
+# STEP 0: Bootstrap (Download Source)
+# ============================================================
+if [ ! -d "src" ] || [ ! -f "server.py" ]; then
+    echo -e "${YELLOW}[Step 0/6]${NC} Project files not found. Bootstrapping..."
+    
+    # Check if curl and tar are available
+    if ! command -v curl &> /dev/null || ! command -v tar &> /dev/null; then
+        echo -e "  ${RED}✗${NC} curl and tar are required for auto-installation"
+        exit 1
+    fi
+
+    echo -e "  ${BLUE}→${NC} Fetching latest release info..."
+    # Get latest release tag from GitHub API
+    LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO_NAME/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    
+    if [ -z "$LATEST_TAG" ]; then
+        echo -e "  ${YELLOW}⚠${NC} Could not find latest release. Falling back to main branch..."
+        DOWNLOAD_URL="https://github.com/$REPO_NAME/archive/refs/heads/main.tar.gz"
+        VERSION="main"
+    else
+        echo -e "  ${GREEN}✓${NC} Found latest version: ${GREEN}$LATEST_TAG${NC}"
+        DOWNLOAD_URL="https://github.com/$REPO_NAME/archive/refs/tags/$LATEST_TAG.tar.gz"
+        VERSION="$LATEST_TAG"
+    fi
+
+    echo -e "  ${BLUE}→${NC} Downloading $VERSION..."
+    curl -L "$DOWNLOAD_URL" -o vps-monitor.tar.gz
+    
+    echo -e "  ${BLUE}→${NC} Extracting..."
+    # Extract strip-components=1 to dump contents directly into current dir
+    tar -xzf vps-monitor.tar.gz --strip-components=1
+    rm vps-monitor.tar.gz
+    
+    echo -e "  ${GREEN}✓${NC} Source code downloaded"
+    echo ""
+fi
 
 # ============================================================
 # STEP 1: Check Prerequisites
@@ -189,14 +228,24 @@ echo ""
 # MCP Configuration
 echo -e "${BLUE}MCP Client Configuration:${NC}"
 echo ""
+echo -e "  Add this to your ${YELLOW}claude_desktop_config.json${NC} or ${YELLOW}.cursor/mcp.json${NC}:"
+echo ""
 echo '  {'
 echo '    "mcpServers": {'
-echo '      "vps-monitor": {'
-echo "        \"command\": \"$INSTALL_PATH/venv/bin/python\","
-echo "        \"args\": [\"$INSTALL_PATH/server.py\"]"
+echo '      "vps-forensics": {'
+echo '        "command": "ssh",'
+echo '        "args": ['
+echo '          "-i",'
+echo '          "/path/to/your/private-key.pem",'
+echo '          "user@your-vps-ip",'
+echo '          "python",'
+echo "          \"$INSTALL_PATH/server.py\""
+echo '        ]'
 echo '      }'
 echo '    }'
 echo '  }'
+echo ""
+echo -e "  ${YELLOW}Note:${NC} Replace /path/to/private-key.pem and user@your-vps-ip with actual values."
 echo ""
 
 # Available Tools
@@ -207,4 +256,6 @@ echo "  • deep_docker_inspect     - Docker container analysis"
 echo "  • check_resource_leaks    - FD/connection leak detection"
 echo "  • read_kernel_ring_buffer - Read dmesg for OOM/segfaults"
 echo "  • analyze_background_tasks- Find hidden resource hogs"
+echo "  • kill_process            - Terminate processes (safety checked)"
+echo "  • restart_container       - Restart Docker containers"
 echo ""

@@ -1,0 +1,69 @@
+name: CI/CD & Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  # 1. TEST JOB
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Remediation Test
+        run: python tests/test_remediation.py
+        # This checks if kill_process works (uses 'sleep' command available on Linux)
+
+      - name: Run Tools Test
+        run: python tests/test_tools.py
+        # This checks if all tools can be initialized and executed
+
+  # 2. RELEASE JOB (Only runs if 'test' passes)
+  release:
+    name: Create Release
+    needs: test
+    runs-on: ubuntu-latest
+    if: success() # Only run if tests passed
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for generating changelog
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          release_branches: main
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          files: |
+            install.sh
+            requirements.txt
+            server.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

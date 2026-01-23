@@ -87,7 +87,7 @@
 Run this simple command on your VPS to set up everything automatically:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/your-username/vps-process-monitoring/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/Arseno25/server-monitor/main/install.sh | bash
 ```
 
 <details>
@@ -95,7 +95,7 @@ curl -sSL https://raw.githubusercontent.com/your-username/vps-process-monitoring
 
 ```bash
 # Clone and install
-git clone https://github.com/your-username/vps-process-monitoring.git
+git clone https://github.com/Arseno25/server-monitor.git
 cd vps-process-monitoring
 chmod +x install.sh
 ./install.sh
