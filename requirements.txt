@@ -1,0 +1,2 @@
+# MCP SDK
+mcp[cli]>=1.0.0
