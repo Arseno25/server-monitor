@@ -75,7 +75,8 @@ if [ ! -d "src" ] || [ ! -f "server.py" ]; then
     
     if [ -z "$LATEST_TAG" ]; then
         echo -e "  ${YELLOW}⚠${NC} Could not find latest release. Falling back to main branch..."
-        DOWNLOAD_URL="https://github.com/$REPO_NAME/archive/refs/heads/main.tar.gz"
+        # Correct URL for main branch tarball
+        DOWNLOAD_URL="https://github.com/$REPO_NAME/archive/main.tar.gz"
         VERSION="main"
     else
         echo -e "  ${GREEN}✓${NC} Found latest version: ${GREEN}$LATEST_TAG${NC}"
