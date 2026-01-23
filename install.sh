@@ -1,5 +1,5 @@
 #!/bin/bash
-# VPS Process Monitoring MCP Server - Installation Script
+# Server Process Monitoring MCP Server - Installation Script
 # Usage: chmod +x install.sh && ./install.sh
 
 set -e
@@ -14,14 +14,14 @@ NC='\033[0m' # No Color
 # Small banner
 echo ""
 echo -e "${BLUE}╔══════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║${NC}     🔍 ${GREEN}VPS Process Monitoring MCP Server${NC}                 ${BLUE}║${NC}"
+echo -e "${BLUE}║${NC}     🔍 ${GREEN}Server Process Monitoring MCP Server${NC}                 ${BLUE}║${NC}"
 echo -e "${BLUE}║${NC}        Forensic Diagnosis for Silent Failures           ${BLUE}║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
 # Get installation path
 INSTALL_PATH=$(pwd)
-REPO_NAME="Arseno25/vps-monitor"
+REPO_NAME="Arseno25/server-monitor"
 
 # ============================================================
 # STEP 0: Bootstrap (Download Source)
@@ -29,15 +29,49 @@ REPO_NAME="Arseno25/vps-monitor"
 if [ ! -d "src" ] || [ ! -f "server.py" ]; then
     echo -e "${YELLOW}[Step 0/6]${NC} Project files not found. Bootstrapping..."
     
-    # Check if curl and tar are available
-    if ! command -v curl &> /dev/null || ! command -v tar &> /dev/null; then
-        echo -e "  ${RED}✗${NC} curl and tar are required for auto-installation"
-        exit 1
+    # 0.1 Determine Sudo Usage
+    if [ "$(id -u)" -eq 0 ]; then
+        SUDO_CMD=""
+    else
+        if ! command -v sudo &> /dev/null; then
+            echo -e "  ${RED}✗${NC} Script requires 'sudo' or root privileges to install dependencies."
+            exit 1
+        fi
+        SUDO_CMD="sudo"
     fi
 
+    # 0.2 Check and Install Dependencies
+    MISSING_DEPS=()
+    # Added 'file' command for verification
+    for cmd in curl tar gzip file; do
+        if ! command -v $cmd &> /dev/null; then
+            MISSING_DEPS+=($cmd)
+        fi
+    done
+
+    if [ ${#MISSING_DEPS[@]} -ne 0 ]; then
+        echo -e "  ${YELLOW}⚠${NC} Missing dependencies: ${MISSING_DEPS[*]}"
+        echo -e "  ${BLUE}→${NC} Attempting to install..."
+        
+        if command -v apt-get &> /dev/null; then
+            $SUDO_CMD apt-get update -qq
+            $SUDO_CMD apt-get install -y -qq "${MISSING_DEPS[@]}"
+        elif command -v yum &> /dev/null; then
+            $SUDO_CMD yum install -y -q "${MISSING_DEPS[@]}"
+        elif command -v apk &> /dev/null; then
+            $SUDO_CMD apk add --no-cache "${MISSING_DEPS[@]}"
+        else
+            echo -e "  ${RED}✗${NC} Could not detect package manager. Please install: ${MISSING_DEPS[*]}"
+            exit 1
+        fi
+        echo -e "  ${GREEN}✓${NC} Dependencies installed"
+    fi
+
+    # 0.3 Download Source
     echo -e "  ${BLUE}→${NC} Fetching latest release info..."
-    # Get latest release tag from GitHub API
-    LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO_NAME/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    
+    # Try getting latest tag, fail gracefully
+    LATEST_TAG=$(curl -s -f "https://api.github.com/repos/$REPO_NAME/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') || true
     
     if [ -z "$LATEST_TAG" ]; then
         echo -e "  ${YELLOW}⚠${NC} Could not find latest release. Falling back to main branch..."
@@ -50,12 +84,26 @@ if [ ! -d "src" ] || [ ! -f "server.py" ]; then
     fi
 
     echo -e "  ${BLUE}→${NC} Downloading $VERSION..."
-    curl -L "$DOWNLOAD_URL" -o vps-monitor.tar.gz
+    
+    # Download with fail flag (-f) to catch 404s
+    if ! curl -L -f "$DOWNLOAD_URL" -o Server-monitor.tar.gz; then
+        echo -e "  ${RED}✗${NC} Failed to download source code from $DOWNLOAD_URL"
+        rm -f Server-monitor.tar.gz
+        exit 1
+    fi
+    
+    # Verify file type (ensure it's not an error HTML page)
+    # Using 'file' command (we just ensured it exists)
+    if ! file Server-monitor.tar.gz | grep -q "gzip compressed data"; then
+        echo -e "  ${RED}✗${NC} Downloaded file is not a valid gzip package"
+        head -n 5 Server-monitor.tar.gz # Show first few lines logic debug
+        rm -f Server-monitor.tar.gz
+        exit 1
+    fi
     
     echo -e "  ${BLUE}→${NC} Extracting..."
-    # Extract strip-components=1 to dump contents directly into current dir
-    tar -xzf vps-monitor.tar.gz --strip-components=1
-    rm vps-monitor.tar.gz
+    tar -xzf Server-monitor.tar.gz --strip-components=1
+    rm Server-monitor.tar.gz
     
     echo -e "  ${GREEN}✓${NC} Source code downloaded"
     echo ""
@@ -232,12 +280,12 @@ echo -e "  Add this to your ${YELLOW}claude_desktop_config.json${NC} or ${YELLOW
 echo ""
 echo '  {'
 echo '    "mcpServers": {'
-echo '      "vps-forensics": {'
+echo '      "Server-forensics": {'
 echo '        "command": "ssh",'
 echo '        "args": ['
 echo '          "-i",'
 echo '          "/path/to/your/private-key.pem",'
-echo '          "user@your-vps-ip",'
+echo '          "user@your-Server-ip",'
 echo '          "python",'
 echo "          \"$INSTALL_PATH/server.py\""
 echo '        ]'
@@ -245,7 +293,7 @@ echo '      }'
 echo '    }'
 echo '  }'
 echo ""
-echo -e "  ${YELLOW}Note:${NC} Replace /path/to/private-key.pem and user@your-vps-ip with actual values."
+echo -e "  ${YELLOW}Note:${NC} Replace /path/to/private-key.pem and user@your-Server-ip with actual values."
 echo ""
 
 # Available Tools
