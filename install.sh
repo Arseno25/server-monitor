@@ -9,15 +9,19 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
 NC='\033[0m' # No Color
 
-# Small banner
-echo ""
-echo -e "${BLUE}╔══════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║${NC}     🔍 ${GREEN}Server Process Monitoring MCP Server${NC}                 ${BLUE}║${NC}"
-echo -e "${BLUE}║${NC}        Forensic Diagnosis for Silent Failures           ${BLUE}║${NC}"
-echo -e "${BLUE}╚══════════════════════════════════════════════════════════╝${NC}"
-echo ""
+# Modern Banner
+echo -e ""
+echo -e "${BLUE} ╭──────────────────────────────────────────────────────────╮${NC}"
+echo -e "${BLUE} │                                                          │${NC}"
+echo -e "${BLUE} │  ${BOLD}${GREEN}⚡ SERVER PROCESS MONITORING MCP${NC}${BLUE}                       │${NC}"
+echo -e "${BLUE} │     ${CYAN}Forensic Investigator for Silent Failures${NC}${BLUE}            │${NC}"
+echo -e "${BLUE} │                                                          │${NC}"
+echo -e "${BLUE} ╰──────────────────────────────────────────────────────────╯${NC}"
+echo -e ""
 
 # Get installation path
 INSTALL_PATH=$(pwd)
