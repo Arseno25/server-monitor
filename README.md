@@ -1,12 +1,13 @@
 <div align="center">
 
-# 🔍 VPS Process Monitoring MCP Server
+# VPS Process Monitoring MCP Server
 ### Forensic Investigator for Silent VPS Failures
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Stable-green?style=flat-square" alt="Status" />
   <img src="https://img.shields.io/badge/Platform-Linux%20VPS-blue?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/Python-3.10+-yellow?style=flat-square" alt="Python" />
+  <img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License" />
 </p>
 
 <p>
@@ -150,5 +151,5 @@ server_params = StdioServerParameters(
 
 <br>
 <div align="center">
-  <sub>Built with ❤️ using <strong>Model Context Protocol</strong> and <strong>Clean Architecture</strong></sub>
+  <sub>Built with ❤️ using <strong>Model Context Protocol</strong></sub>
 </div>
