@@ -1,11 +1,11 @@
 <div align="center">
 
-# VPS Process Monitoring MCP Server
-### Forensic Investigator for Silent VPS Failures
+# Server Process Monitoring MCP Server
+### Forensic Investigator for Silent Server Failures
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Stable-green?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/Platform-Linux%20VPS-blue?style=flat-square" alt="Platform" />
+  <img src="https://img.shields.io/badge/Platform-Linux%20Server-blue?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/Python-3.10+-yellow?style=flat-square" alt="Python" />
   <img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License" />
 </p>
@@ -83,9 +83,9 @@
 
 <br>
 
-## 🚀 Quick Setup (Linux VPS)
+## 🚀 Quick Setup (Linux Server)
 
-Run this simple command on your VPS to set up everything automatically:
+Run this simple command on your Server to set up everything automatically:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/Arseno25/server-monitor/main/install.sh | bash
@@ -97,7 +97,7 @@ curl -sSL https://raw.githubusercontent.com/Arseno25/server-monitor/main/install
 ```bash
 # Clone and install
 git clone https://github.com/Arseno25/server-monitor.git
-cd vps-process-monitoring
+cd Server-process-monitoring
 chmod +x install.sh
 ./install.sh
 ```
@@ -107,7 +107,7 @@ chmod +x install.sh
 
 ## 🔌 Client Configuration
 
-Connect your MCP client to your VPS securely via SSH.
+Connect your MCP client to your Server securely via SSH.
 
 ### Claude Desktop & Cursor
 Add the following configuration to your MCP config file (`claude_desktop_config.json` or `.cursor/mcp.json`):
@@ -115,14 +115,14 @@ Add the following configuration to your MCP config file (`claude_desktop_config.
 ```json
 {
   "mcpServers": {
-    "vps-forensics": {
+    "Server-forensics": {
       "command": "ssh",
       "args": [
         "-i",
         "/path/to/your/private-key.pem",
-        "user@your-vps-ip",
+        "user@your-Server-ip",
         "python",
-        "/opt/vps-process-monitoring/server.py"
+        "/opt/Server-process-monitoring/server.py"
       ]
     }
   }
@@ -141,8 +141,8 @@ server_params = StdioServerParameters(
     command="ssh",
     args=[
         "-i", "/path/to/private-key.pem",
-        "user@your-vps-ip", 
-        "python", "/opt/vps-process-monitoring/server.py"
+        "user@your-Server-ip", 
+        "python", "/opt/Server-process-monitoring/server.py"
     ]
 )
 ```
