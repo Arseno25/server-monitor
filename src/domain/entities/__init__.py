@@ -9,6 +9,19 @@ from .models import (
     KernelMessage,
     KernelBufferResult,
     BackgroundTask,
+    # Security Detection Entities
+    AttackSeverity,
+    ScanPattern,
+    AnomalyType,
+    MalwareType,
+    ConnectionRateInfo,
+    BruteForceAttempt,
+    PortScanEvent,
+    SecurityLogEvent,
+    AnomalyEvent,
+    NetworkConnection,
+    MalwareIndicator,
+    SecurityThreat,
 )
 
 __all__ = [
@@ -21,4 +34,17 @@ __all__ = [
     "KernelMessage",
     "KernelBufferResult",
     "BackgroundTask",
+    # Security Detection Entities
+    "AttackSeverity",
+    "ScanPattern",
+    "AnomalyType",
+    "MalwareType",
+    "ConnectionRateInfo",
+    "BruteForceAttempt",
+    "PortScanEvent",
+    "SecurityLogEvent",
+    "AnomalyEvent",
+    "NetworkConnection",
+    "MalwareIndicator",
+    "SecurityThreat",
 ]
